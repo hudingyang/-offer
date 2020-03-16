@@ -1,0 +1,44 @@
+方法1：
+    利用unordered_map建立哈希表，当数组中某个元素的个数大于1时立即返回
+代码：
+class solution
+{
+    public:
+          int findRepeatNumber(vector<int>& nums)
+          {
+                unordered_map<int ,int >m;
+                for(int i=0;i<nums.size();i++)
+                {
+                    if(++m[nums[i]]>1) return nums[i];
+                }
+                return 0;
+          }
+};
+
+方法2:下标定位法
+从头到尾扫描数组,当扫描到下标为i的数字时,首先比较这个数字(用m表示)是否等于下标i,如果等于就扫描下一个数字;如果不是,则将它和第m个数字进行比较.
+如果它和第m个数相等,那么出现了重复直接返回;如果不相等,则将它和第m个数进行交换,把m放到第m个位置上
+重复这个过程,知道出现一个重复的数字
+时间复杂度O(n),空间复杂度O(1)
+class solution
+{
+    public:
+          int findRepeatNumber(vector<int>& nums)
+          {
+                if(nums.empty())
+                    return -1;
+                for(int i=0;i<nums.size();i++)
+                {
+                    while(nums[i]!=i)
+                    {
+                        if(nums[i]==nums[nums[i]])
+                        {
+                          return nums[i];
+                        }
+                        else
+                            swap(nums[i],nums[nums[i]]);
+                    }
+                }
+                return -1;
+          }
+};
