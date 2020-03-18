@@ -1,0 +1,17 @@
+双指针单调性：从左下角开始查找遍历。（右上同上）
+    时间复杂度：T:O(n+m)
+    空间复杂度：S：O(1)
+class Solution {
+public:
+    bool findNumberIn2DArray(vector<vector<int>>& matrix, int target) {
+        if(matrix.empty()) return false;
+        int n=matrix.size(),m=matrix[0].size();
+        int x=n-1,y=0;
+        while(x>=0&&y<=m)
+        {
+            if(matrix[x][y]==target) retrun true;
+            if(matrix[x][y] > target) x--;
+            else y++;
+        }
+        retrun false;
+};
