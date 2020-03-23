@@ -1,0 +1,35 @@
+解题思路：
+  寻找旋转数组的最小元素即为寻找 右排序数组 的首个元素 numbers[x] ，称 xx 为 旋转点 。
+  排序数组的查找问题首先考虑使用 二分法 解决，其可将遍历法的 线性级别 时间复杂度降低至 对数级别 。
+
+算法流程：
+   1、循环二分
+      设置i,j连个指针分别指向numbers数组左右两端，m=(i+j)//2或者(m=(i+j)>>1)为每次二分的中点;
+       （ "//" 代表向下取整除法，因此恒有 i <m < j，可分为以下三种情况：
+       1）、当 numbers[m] > numbers[j]时： m 一定在 左排序数组 中，即旋转点 x 一定在 [m+1,j] 闭区间内，因此执行i=m+1；
+       2）、当 numbers[m] < numbers[j] 时：m 一定在 右排序数组 中，即旋转点 x 一定在[i,m] 闭区间内，因此执行j=m；
+       3）、当 numbers[m] == numbers[j] 时： 无法判断 m 在哪个排序数组中，即无法判断旋转点 x 在 [i,m] 还是[m+1,j] 区间中。
+          解决方案： 执行 j = j - 1j=j−1 缩小判断范围 （分析见以下内容） 。
+    2、返回值：当i=j时跳出二分循环，并返回numbers[i]即可；
+
+思考： 是否可以用 numbers[m] 和 numbers[i] 比较做代替？
+解析： 不可以。因为做比较的目的是判断 m 在哪个排序数组中。但在 numbers[m] > numbers[i]情况下，无法判断 m 在哪个排序数组中。
+      本质是因为 j初始值肯定在右排序数组中； i 初始值无法确定在哪个排序数组中。
+      示例： 当 i = 0, j = 4, m = 2 时，有 numbers[m] > numbers[i] ，以下两示例得出不同结果。
+      numbers = [1, 2, 3, 4 ,5] 旋转点 x = 0： m 在右排序数组（此示例只有右排序数组）；
+      numbers = [3, 4, 5, 1 ,2] 旋转点 x = 3： m 在左排序数组。
+class Solution {
+public:
+    int minArray(vector<int>& numbers) {
+        int i=0;
+        int j=numbers.size()-1;
+        while(i<j)
+        {
+            int mid=(i+j)>>1;
+            if(numbers[mid]<numbers[j]) j=mid;
+            else if(numbers[mid]>numbers[j]) i=mid+1;
+            else j--;
+        }
+        return numbers[i];
+    }
+};
