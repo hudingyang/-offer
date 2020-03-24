@@ -1,0 +1,52 @@
+方法一：深度优先遍历 DFS
+    深度优先搜索： 可以理解为暴力法模拟机器人在矩阵中的所有路径。DFS 通过递归，先朝一个方向搜到底，再回溯至上个节点，沿另一个方向搜索，以此类推。
+    剪枝： 在搜索中，遇到数位和超出目标值、此元素已访问，则应立即返回，称之为 可行性剪枝 。
+算法解析：
+    递归参数： 当前元素在矩阵中的行列索引 i 和 j ，两者的数位和 si, sj 。
+    终止条件： 当 ① 行列索引越界 或 ② 数位和超出目标值 k 或 ③ 当前元素已访问过 时，返回 00 ，代表不计入可达解。
+递推工作：
+    标记当前单元格 ：将索引 (i, j) 存入 Set visited 中，代表此单元格已被访问过。
+    搜索下一单元格： 计算当前元素的 下、右 两个方向元素的数位和，并开启下层递归 。
+    回溯返回值： 返回 1 + 右方搜索的可达解总数 + 下方搜索的可达解总数，代表从本单元格递归搜索的可达解总数。
+
+机器人的运动范围需要同时满足以下两个条件：
+  当前格子坐标数位之和不大于 k；
+  从坐标 (0, 0) 通过上下左右移动可以到达当前格子
+class solution
+{
+public:
+    int num=0;
+   int movingcount(int m,int n,int k)
+   {
+      vector<vector<int>> arr(m,vector<int> (n,0));
+      if(k==0)
+        return ;
+      search(m,n,k,arr,0,0);
+      return nums;
+   }
+   
+   void dfs(int m,int n,int k,vector<vector<int>>&arr,int i,int j)
+   {
+      if(i>=m||j>=n||i<0||j<0)
+        return ;
+      if(arr[i][j]==1)
+        return ;
+      if((i%10+i/10+j%10+j/10)>k)
+        return ;
+      nums++;  
+      
+      search(m,n,k,arr,i-1,j);
+      search(m,n,k,arr,i+1,j);
+      search(m,n,k,arr,i,j-1);
+      search(m,n,k,arr,i,j+1);
+   }
+};
+
+如何计算行坐标和列坐标的数位之和
+int sum=0;
+while(n>0)
+{
+  sum+=n%10;
+  n/=10;
+}
+return sum;
