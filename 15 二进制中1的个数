@@ -1,0 +1,43 @@
+方法一：按位判断
+   依次判断整数的每一位是否为 1 
+判断第几位就将1左移几
+   判断第 1 位：n & 1
+  判断第 2 位：n & (1 << 1)
+  ......
+  判断第32位：n & (1 << 31)
+  class solution
+  {
+   public:
+      int hanmingweight(uint_32 n)
+      {
+          int res=0;
+          for(int i=0;i<32;i++)
+          {
+              if(n&(1<<i))
+                res++;
+          }
+          return res;
+      }
+  };
+  
+  
+  方法二：N&(N-1)
+  使用这个方法，基于这样一个事实：
+     一个数 n 与一个比它小 1 的数（n - 1）进行与运算（&）之后，得到的结果会消除 nn 中最低位的 1.
+     运行了几次 N&(N-1) N中就有几个1
+     
+     class solution
+  {
+   public:
+      int hanmingweight(uint_32 n)
+      {
+          int res=0;
+          while(n!=0)
+          {
+              n&=n-1;
+              res++;
+          }
+          return res;
+      }
+  };
+     
