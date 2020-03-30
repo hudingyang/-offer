@@ -1,0 +1,118 @@
+正则表达式匹配：
+    模式中的字符‘.’表示任意一个字符
+    ‘*’表示它前面的字符可以出现任意次。
+题解：
+    首先定义状态：
+        dp[i][j]:表示 s 前i个字符[0，i)是否匹配 p 的前 j 个字符[0,j)。要明确这里是左闭右开的区间，因此是在比较s[i-1]与p[j-1]。
+        
+        确定状态方程之前明确可能会出现的次数，首先是s[i-1]与p[j-1]的关系，可能相等，可能不等，
+        不等的三种情况：1)、p[j-1]为‘*’，2)、p[j-1]为‘.'，3)、p[j-1]就是普通字符。
+完整思路：
+    1、s[i-1]==p[j-1]   相等
+        dp[i][j]=dp[i-1][j-1]
+    2、s[i-1]!=p[j-1]
+        1)、p[j-1]=='.'
+            '.'是万能字符，可以直接让'.'等于s[i-1]处的字符。
+            dp[i][j]=dp[i-1][j-1]
+        2)、p[j-1]=='*'
+            '*'可以匹配零个或多个前面的元素，而是否能取多个或者1个要看j-2的字符是否和i-1的字符相等。
+            因此要判断p[j-2]==s[i-1];
+            (1) p[j-2]!=s[i-1]
+                j-2的字符不等于i-1的字符，那就只能让*代表取0个字符。
+                dp[i][j]=dp[i][j-2]（相当于去掉p[j-1]和p[j-2]）
+            (2) p[j-2]==s[i-1] || p[j-2]=='.'
+                可以让*代表0个字符或者多个字符，如果p[j-2]为'.'就可以替换s[i-1]字符。
+                '*'取0个字符 
+                例子：s:aab,p:aabb*,虽然j-2和i-1相等，但是dp[i][j-2]已经匹配了，直接删去j-1和j-2即可。
+                dp[i][j]=dp[i][j-2];(取0个字符)
+                '*'取1个字符 
+                例子：s:aab,p:aab*
+                dp[i][j]=dp[i][j-1];(取1个字符,相当于去掉p[j-1])
+                '*'取多个字符
+                例子：s:aabb, p: aab*,要判断的是s:aab和aab*是否可以匹配，如果可以，那么s后面再加上一个b也没有关系，因为*可以变成多个b
+                dp[i][j]=dp[i-1][j];
+         3)、普通字符
+                dp[i][j]=false;
+初始解
+动态规划方程根据分析很好写，但是很重要的一点是初始解怎么写
+初始解一般是对第一个变量等于0的情况，含义即源字符串为空的时候怎么与模式串P进行匹配
+
+首先想到两个都是空的时候，是匹配的，为true
+如果模式串不为空，也要分情况讨论：
+对p[j] != '*'，一定是不匹配的
+如果p[j] == '*'，那么就存在p[j-1]p[j]这两个模式串使用0次，也可以匹配
+因此初始解dp[0][j]可以定义为:
+
+对p[j] != '*'，一定是不匹配的，等于false && dp[0][j-1]
+如果p[j] == '*'，那么就存在p[j-1]p[j]这两个模式串使用0次，也可以匹配,等于true && dp[0][j-2]
+复杂度分析
+记源字符串长为N，模式串长为M
+时间复杂度：O(MN),因为对每个源字符串都要对应比较模式串的每一位
+空间复杂度：O(MN),开了这么大的数组存值              
+                
+class Solution {
+public:
+   /* // 动态规划
+    bool isMatch(string s, string p) {
+        int ns = s.length();
+        int np = p.length();
+        if(p.empty()) return s.empty();
+        vector<vector<bool>> dp(ns+1, vector<bool>(np+1, false));
+        dp[0][0] = true;
+        for(int i = 1; i <= np; i++){
+            if(i-2 >= 0 && p[i-1] == '*' && p[i-2]){
+                dp[0][i] = dp[0][i-2];
+            }
+        }
+        
+        for(int i = 1; i <= ns; i++){
+            for(int j = 1; j <= np; j++){
+                if(p[j-1] == s[i-1] || p[j-1] == '.')
+                    dp[i][j] = dp[i-1][j-1];
+                if(p[j-1] == '*'){
+                    bool zero, one;
+                    if(j-2 >= 0){
+                        zero = dp[i][j-2];
+                        one = (p[j-2] == s[i-1] || p[j-2] == '.') && dp[i-1][j];
+                        dp[i][j] = zero || one;
+                    }
+                }
+            }
+        }
+        return dp[ns][np];
+    }*/
+    
+    // 递归比较
+    bool isMatch(string s, string p) {
+        return helperMatch(s, p, 0, 0);
+    }
+
+    bool helperMatch(string &s, string &p, int i, int j){
+        int ns = s.size();
+        int np = p.size();
+        if(np == j){
+            if(ns == i) return true;
+            return false;
+        }
+        bool one = false, zero = false;
+        if(j + 1 < np && p[j+1] == '*'){  // 遇到*时
+            zero = helperMatch(s, p, i, j+2);  // 使用0次
+            if(!zero && (i < ns) && (p[j] == s[i] || p[j] == '.')){
+                one = helperMatch(s, p, i+1, j);  // 使用多次
+            }
+            return zero || one;
+        }else{
+            if((i < ns) && (p[j] == s[i] || p[j] == '.')){
+                return helperMatch(s, p, i+1, j+1);  // 当前字符正常匹配
+            }else{
+                return false;  // 不匹配
+            }
+        }
+        return false;
+    }
+};
+  
+                
+                
+                
+                
