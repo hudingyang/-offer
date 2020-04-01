@@ -1,0 +1,60 @@
+快慢指针
+定义两个指针，快指针 fast， 慢指针 low .
+让 fast 先向前移动 k 个位置，然后 low 和 fast 再一起向前移动 .
+当 fast 到达链表尾部，返回 low .
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* getKthFromEnd(ListNode* head, int k) {
+        ListNode* low=head;
+        ListNode* fast=head;
+        while(fast!=NULL)
+        {
+            fast=fast->next;
+            if(k==0)
+            {
+                low=low->next;
+            }
+            else
+            {
+                k--;
+            }
+        }
+        return low;
+    }
+};
+
+递归
+先一直递归到链表尾部，再返回
+定义位置变量 pos ，每次函数返回时 pos++
+当 pos == k 时，说明此时递归函数位于第 k 个结点位置，返回该结点
+class solution
+{
+public:
+    int pos;
+    ListNode* res;
+    ListNode* getKthFromEnd(ListNode* head,int k)
+    {
+      if(head==nullptr)
+      {
+          pos=0;
+          return nullptr;
+      }
+      getKthFromEnd(head->next,k);
+      pos++;
+      if(pos==k)
+      {
+        res=head;
+      }
+      return res;
+    }
+};
+
+
