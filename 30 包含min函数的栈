@@ -1,0 +1,65 @@
+解题思路：
+    普通栈的 push() 和 pop() 函数的复杂度为 O(1) ；而获取栈最小值 min() 函数需要遍历整个栈，复杂度为 O(N)。
+
+    本题难点： 将 min() 函数复杂度降为 O(1) ，可通过建立辅助栈实现；(以空间换取时间)
+    数据栈 A ： 栈 A 用于存储所有元素，保证入栈 push() 函数、出栈 pop() 函数、获取栈顶 top() 函数的正常逻辑。
+    辅助栈 B ： 栈 B 中存储栈 A 中所有 非严格降序 的元素，则栈 A 中的最小元素始终对应栈 B 的栈顶元素，即 min() 函数只需返回栈 B 的栈顶元素即可。
+    因此，只需设法维护好 栈 B 的元素，使其保持非严格降序，即可实现 min() 函数的 O(1) 复杂度。
+
+函数设计：
+push(x) 函数： 重点为保持栈 B 的元素是 非严格降序 的。
+  将 x 压入栈 A （即 A.push(x) ）；
+  若 ① 栈 B 为空 或 ② x 小于等于 栈 B 的栈顶元素，则将 x 压入栈 B （即 B.push(x) ）。
+  
+pop() 函数： 重点为保持栈 A, B 的 元素一致性 。
+  执行栈 A 出栈（即 A.pop() ），将出栈元素记为 y ；
+  若 y 等于栈 B 的栈顶元素，则执行栈 B 出栈（即 B.pop() ）。
+  
+top() 函数： 直接返回栈 A 的栈顶元素即可，即返回 A.top() 。
+min() 函数： 直接返回栈 B 的栈顶元素即可，即返回 B.top() 。
+
+class MinStack {
+public:
+    /** initialize your data structure here. */
+    MinStack() {
+
+    }
+    
+    void push(int x) {
+        s1.push(x);
+        if(s2.empty())
+        {
+            s2.push(x);
+        }
+        else 
+        {
+            int t=s2.top();
+            s2.push(x<t?x:t);
+        }
+    }
+    
+    void pop() {
+        s1.pop();
+        s2.pop();
+    }
+    
+    int top() {     
+        return s1.top();
+    }
+    
+    int min() {
+        return s2.top();
+    }
+    private:
+    stack<int> s1;
+    stack<int> s2;
+};
+
+/**
+ * Your MinStack object will be instantiated and called as such:
+ * MinStack* obj = new MinStack();
+ * obj->push(x);
+ * obj->pop();
+ * int param_3 = obj->top();
+ * int param_4 = obj->min();
+ */
