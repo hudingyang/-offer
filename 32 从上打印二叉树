@@ -1,0 +1,200 @@
+解题思路：
+题目要求的二叉树的 从上至下 打印（即按层打印），又称为二叉树的 广度优先搜索（BFS）。
+BFS 通常借助 队列 的先入先出特性来实现。
+
+算法流程：
+特例处理： 当树的根节点为空，则直接返回空列表 [] ；
+初始化： 打印结果列表 res = [] ，包含根节点的队列 queue = [root] ；
+BFS 循环： 当队列 queue 为空时跳出；
+出队： 队首元素出队，记为 node；
+打印： 将 node.val 添加至列表 tmp 尾部；
+添加子节点： 若 node 的左（右）子节点不为空，则将左（右）子节点加入队列 queue ；
+返回值： 返回打印结果列表 res 即可。
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+ /*二叉树打印在一行*/
+class Solution {
+public:
+    vector<int> levelOrder(TreeNode* root) {
+        vector<int> res;
+        if(root == nullptr) return res;   //判断根节点是否为空
+        
+        queue<TreeNode*> que;
+        que.push(root);
+        while(!que.empty()) {
+            TreeNode* curNode = que.front(); que.pop();
+            res.push_back(curNode->val);
+            if(curNode->left) que.push(curNode->left);
+            if(curNode->right) que.push(curNode->right);
+        }
+        return res;
+    }
+};
+
+解题思路：
+
+I. 按层打印： 题目要求的二叉树的 从上至下 打印（即按层打印），又称为二叉树的 广度优先搜索（BFS）。
+   BFS 通常借助 队列 的先入先出特性来实现。
+II. 每层打印到一行： 若将二叉树从上至下分为多层，则通过访问 某层所有节点的 左右子节点 ，可统计出 下一层的所有节点 。
+    根据此特性，可在打印本层全部节点时，将下一层全部节点加入队列，以此类推，即可分为多行打印。
+算法流程：
+特例处理： 当树的根节点为空，则直接返回空列表 [] ；
+
+初始化： 打印结果列表 res = [] ，包含根节点的队列 queue = [root] ；
+
+BFS 循环： 当队列 queue 为空时跳出；
+新建一个临时列表 tmp ，用于存储当前层打印结果；
+当前层打印循环： 循环次数为队列 queue 长度（队列中元素为所有当前层节点）；
+出队： 队首元素出队，记为 node；
+打印： 将 node.val 添加至列表 tmp 尾部；
+添加子节点： 若 node 的左（右）子节点不为空，则将左（右）子节点加入队列 queue ；
+            将当前层结果 tmp 添加入 res 。
+返回值： 返回打印结果列表 res 即可。
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        vector<vector<int>> res;
+        if(root==NULL)
+            return res;
+        queue<TreeNode*> q;
+        q.push(root);
+        while(!q.empty())
+        {
+            vector<int> ans;
+            int len=q.size();
+            for(int i=0;i<len;i++)//当层节点都在队列中
+            {
+                TreeNode* tmp=q.front();
+                q.pop();
+                ans.push_back(tmp->val);//按行打印
+
+                if(tmp->left) q.push(tmp->left);
+                if(tmp->right) q.push(tmp->right);
+            }
+            res.push_back(ans);
+        }
+        return res;
+    }
+};
+
+/*之字型打印*/
+方法二：双端队列
+算法流程：
+特例处理： 当树的根节点为空，则直接返回空列表 [] ；
+初始化： 打印结果列表 res = [] ，包含根节点的双端队列 deque = [root] ；
+BFS 循环： 循环打印奇 / 偶树层，当 deque 为空时跳出；
+打印奇数层： 从左向右打印，先左后右加入下层节点；
+若 deque 为空，说明向下无偶数层，则跳出；
+打印偶数层： 从右向左打印，先右后左加入下层节点；
+返回值： 返回打印结果列表 res 即可；
+复杂度分析：
+时间复杂度 O(N) ： N 为二叉树的节点数量，即 BFS 需循环 N 次，占用 O(N) ；双端队列的队首和队尾的添加和删除操作的时间复杂度均为 O(1) 。
+空间复杂度 O(N) ： 最差情况下，即当树为满二叉树时，最多有 N/2 个树节点同时在 deque 中，使用 O(N) 大小的额外空间。
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+/*class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        vector<vector<int>> res;
+        if(root==nullptr) return res;
+        bool flag=true;
+        deque<TreeNode*> q;
+        q.push_back(root);
+        
+        while(!q.empty())
+        {
+            vector<int> ans;            
+            int n=q.size();
+            while(n>0)
+            {
+                TreeNode* tmp;
+                if(flag)
+                {
+                    tmp=q.front();
+                    q.pop_front();
+
+                    if(tmp->left) q.push_back(tmp->left);
+                    if(tmp->right) q.push_back(tmp->right);
+                }
+                else
+                {
+                    tmp=q.back();
+                    q.pop_back();
+                    
+                    if(tmp->right) q.push_front(tmp->right);
+                    if(tmp->left) q.push_front(tmp->left);                    
+                }
+                ans.push_back(tmp->val);
+                n--;
+            }
+            flag=!flag;
+            res.push_back(ans);
+        }        
+        return res;
+    }
+};*/
+
+解题思路
+两个栈stack1和stack2分别存放奇数层和偶数层的节点。
+清空stack1过程中，依次将栈顶节点子节点（先左后右）压入stack2
+清空stack2过程中，依次将栈顶节点子节点（先右后左）压入stack1
+直到stack1和stack2都为空。
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        vector<vector<int>> res;
+        if (root == nullptr) return res;
+        stack<TreeNode *> stk1;
+        stk1.push(root);
+        stack<TreeNode *> stk2;
+        while (!stk1.empty() || !stk2.empty()) {
+            if (!stk1.empty()) {
+                res.push_back(vector<int>());
+                while (!stk1.empty()) {
+                    TreeNode *cur = stk1.top();
+                    stk1.pop();
+                    res.back().push_back(cur->val);
+                    //奇数层根节点的子节点放到栈2中
+                    if (cur->left != nullptr) stk2.push(cur->left);
+                    if (cur->right != nullptr) stk2.push(cur->right);
+                }
+            }
+            if (!stk2.empty()) {
+                res.push_back(vector<int>());
+                while (!stk2.empty()) {
+                    TreeNode *cur = stk2.top();
+                    stk2.pop();
+                    res.back().push_back(cur->val);
+                    //偶数层根节点的子节点放到栈1中
+                    if (cur->right != nullptr) stk1.push(cur->right);
+                    if (cur->left != nullptr) stk1.push(cur->left);
+                }
+            }
+        }
+        return res;
+    }
+};
