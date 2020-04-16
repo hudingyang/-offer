@@ -1,0 +1,97 @@
+本题的意思是复制一个链表并返回，这个链表与一般链表不同的是多了一个 random 指针。
+在这里，复制的意思是指 深拷贝（Deep Copy），类似我们常用的“复制粘贴”，事实上，与此对应的还有 浅拷贝，它们的区别是：
+    浅拷贝只复制指向某个对象的指针，而不复制对象本身，新旧对象还是共享同一块内存。
+    但深拷贝会另外创造一个一模一样的对象，新对象跟原对象不共享内存，修改新对象不会改到原对象。
+//迭代法    
+/*
+// Definition for a Node.
+class Node {
+public:
+    int val;
+    Node* next;
+    Node* random;
+    
+    Node(int _val) {
+        val = _val;
+        next = NULL;
+        random = NULL;
+    }
+};
+*/
+class Solution {
+public:
+    Node* copyRandomList(Node* head) {
+        if(!head) nullptr;
+        //unordered_map<原表节点，新表节点>mp;
+        unordered_map<Node*,Node*> mp;
+        //遍历原表，并将节点的值依次赋给新表
+        for(Node *it=head;it;it=it->next)
+        {
+            mp[it]=new Node(it->val);
+        }
+        //遍历原表，并将节点的next指针和random指针依次赋给新表
+        for(Node *it=head;it;it=it->next)
+        {
+            if(it->next) mp[it]->next=mp[it->next];
+            if(it->random) mp[it]->random=mp[it->random];
+        }
+        return mp[head];
+    }
+};
+
+//dfs深度优先搜索
+class Solution {
+public:
+    Node* copyRandomList(Node* head) {
+      unordered_map<Node*,Node*> used;
+      return dfs(head,used);
+    }
+    Node* dfs(Node* head,unordered_ma<Node*,Node*> used)
+    {
+        if(!head) nullptr;
+        if(used.count(head)) return used[head];
+        Node* res=new Node(head->val);
+        used[head] = res;
+        
+        res->next=dfs(head->next,used);
+        res->random=dfs(head->random,used);
+        
+        return res;
+    }
+};
+//bfs
+class Solution {
+public:
+    Node* copyRandomList(Node* head) {
+        return bfs(head);
+    }
+    
+    Node* bfs(Node* head) {
+        if (!head) return nullptr;
+        unordered_map<Node*, Node*> used;
+        used[head] = new Node(head->val);
+        queue<Node*> q;
+        q.push(head);
+        while (!q.empty()) {
+            int siz = q.size();
+            for (int i = 0; i < siz; i++) {
+                Node *t = q.front(); q.pop();
+                if (t->next) {
+                    if (!used[t->next]) {
+                        used[t->next] = new Node(t->next->val);
+                        q.push(t->next);
+                    }
+                    used[t]->next = used[t->next];
+                }
+                if (t->random) {
+                    if (!used[t->random]) {
+                        used[t->random] = new Node(t->random->val);
+                        q.push(t->random);
+                    }
+                    used[t]->random = used[t->random];
+                }
+            }
+        }
+        return used[head];
+    }
+};
