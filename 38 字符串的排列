@@ -1,0 +1,36 @@
+class Solution {
+public:
+    vector<string> result;
+    vector<string> permutation(string s) {
+        dfs(s, 0);
+        return result;
+    }
+    void dfs(string& s, int pos) {
+        if (pos >= s.size()) {
+            result.push_back(s);
+            return;
+        }
+        for (int i = pos; i < s.size(); ++i) {
+        //break：
+        //(1).结束当前整个循环，执行当前循环下边的语句。忽略循环体中任何其它语句和抄循环条件测试袭。
+        //(2).只能跳出一层循环，如果你的循环是嵌套循环，那么你需要按照你嵌套的层次，逐步使用break来跳出。
+       
+       //continue语句的作用是跳过本次循环体中余下尚未执行的语句，立即进行下一次的循环条件判定，
+        //可以理解为仅结束本次循环。
+        //注意：continue语句并没有使整个循环终止。
+            if (judge(s, pos, i)) continue;   // 如果pos和i之间有字符等于s[i]，则跳过。即有重复
+            swap(s[pos], s[i]);
+            dfs(s, pos+1);
+            //第二个的swap(s[pos], s[i]);作用：这个是必须的， 还原到进入当前函数是的初始状态，
+            //然后才能在交换s[pos]和s[i+1]时不受之前交换结果的影响
+            swap(s[pos], s[i]);
+            }
+    }
+
+    bool judge(string& s, int start, int end) {
+        for (int i = start; i < end; ++i) {
+            if (s[i] == s[end]) return true;
+        }
+        return false;
+    }
+};
