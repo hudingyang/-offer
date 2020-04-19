@@ -1,0 +1,41 @@
+解题思路：
+此题求拼接起来的 “最小数字” ，本质上是一个排序问题。
+排序判断规则： 设 nums 任意两数字的字符串格式 x 和 y ，则
+    若拼接字符串 x+y>y+x ，则 m>n ；
+    反之，若 x+y<y+x ，则 m<n ；
+根据以上规则，套用任何排序方法对 nums 执行排序即可。
+
+算法流程：
+  初始化： 字符串列表 strs ，保存各数字的字符串格式；
+  列表排序： 应用以上 “排序判断规则” ，对 strs 执行排序；
+  返回值： 拼接 strs 中的所有字符串，并返回。
+复杂度分析：
+  时间复杂度 O(NlogN) ： NN 为最终返回值的字符数量（ strs 列表的长度≤N ）；
+    使用快排或内置函数的平均时间复杂度为 O(NlogN) ，最差为 O(N^2)。
+  空间复杂度 O(N) ： 字符串列表 strs 占用线性大小的额外空间。
+
+class Solution {
+public:
+        static bool cmp(string a,string b)
+        {
+            string newab=a+b;
+            string newba=b+a;
+            if(newab<newba)
+              return true;
+            return false;
+        }
+
+    string minNumber(vector<int>& nums) {
+    vector<string> numstr;
+    string result="";
+    for(int num:nums)
+    {
+        numstr.push_back(to_string(num));
+    }
+    sort(numstr.begin(),sort.end(),cmp);
+    
+    for(string s:numstr)
+        result+=s;
+    return result;
+    }
+};
