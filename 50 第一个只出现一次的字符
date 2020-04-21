@@ -1,0 +1,27 @@
+方法一：哈希表
+    遍历字符串 s ，使用哈希表统计 “各字符出现的次数”。
+    再遍历字符串 s ，在哈希表中找到首个 “数量为 1 的字符”，并返回。
+class Solution {
+public:
+    char firstUniqChar(string s) {
+        if(s == "")
+            return ' ';
+        //map中是对应字符出现的次数
+        unordered_map<char,int> cmap;
+        for(int i = 0;i < s.size();i++)
+        {
+            cmap[s[i]]++;
+        }
+        //按字符串的顺序在map中查找到第一个出现一次的字符
+        for(int i = 0;i < s.size();i++)
+        {
+            if(cmap[s[i]] == 1)
+                return s[i];
+        }
+        //没有找到
+        return ' ';
+    }
+};
+复杂度分析：
+时间复杂度 O(N) ： N 为字符串 s 的长度；需遍历 s 两轮，使用 O(N) ；HashMap 查找的操作复杂度为 O(1) ；
+空间复杂度 O(N) ： HashMap 需存储 N 个字符的键值对，使用 O(N) 大小的额外空间。
