@@ -1,0 +1,88 @@
+方法1：优先队列
+解题思路：
+    1、通过深度优优先搜索将树种的所有节点的值加入优先队列中（默认大顶堆）
+    2、弹出优先队列中前k-1个元素，然后堆的首元素即为所求
+代码：
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    priority_queue<int> pq;
+    void dfs(TreeNode* root)
+    {
+        pq.push(root->val);
+        if(root->left) dfs(root->left);
+        if(root->right) dfs(root->right);
+    }
+    int kthLargest(TreeNode* root, int k) {
+    dfs(root);
+    while(--k)
+    {
+        pq.pop();
+    }
+    return pq.top();       
+    }
+};
+
+方法二：中序遍历+提前返回
+解题思路：
+本文解法基于此性质：
+  二叉搜索树的中序遍历为 递增序列 。
+    根据以上性质，易得二叉搜索树的 中序遍历倒序 为 递减序列 。
+    因此，求 “二叉搜索树第 k 大的节点” 可转化为求 “此树的中序遍历倒序的第 k 个节点” 。
+
+为求第 k 个节点，需要实现以下 三项工作 ：
+    递归遍历时计数，统计当前节点的序号；
+    递归到第 k 个节点时，应记录结果 res ；
+    记录结果后，后续的遍历即失去意义，应提前终止（即返回）。
+递归解析：
+    终止条件： 当节点 root 为空（越过叶节点），则直接返回；
+    递归右子树： 即 dfs(root.right) ；
+    三项工作：
+        提前返回： 若 k = 0 ，代表已找到目标节点，无需继续遍历，因此直接返回；
+        统计序号： 执行 k = k - 1 （即从 k 减至 0 ）；
+        记录结果： 若 k = 0，代表当前节点为第 k 大的节点，因此记录 res = root.vall ；
+        递归左子树： 即 dfs(root.left) ；
+class Solution {
+public:
+    int res=0;
+    int n=0;
+    int kthLargest(TreeNode* root, int k) {
+        //方法1 递归：二叉搜索树的逆中序遍历是降序
+        dfs(root,k);
+        return res;
+    }
+    void dfs(TreeNode* root,int k){
+        if(root==NULL)return ;
+        if(root->right)dfs(root->right,k);
+        n++;
+        if(n==k)res=root->val;
+        if(root->left)dfs(root->left,k);
+        return ;
+    }
+
+     //方法2 迭代
+     int kthLargest(TreeNode* root, int k) {
+        stack<TreeNode*>sk;
+        int n=0;
+        while(!sk.empty()||root){
+            while(root){
+                sk.push(root);
+                root=root->right;
+            }
+            root=sk.top();
+            sk.pop();
+            n++;
+            if(n==k)return root->val;
+            root=root->left;
+        }
+        return 0;
+    }
+};
