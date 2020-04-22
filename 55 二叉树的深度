@@ -1,0 +1,84 @@
+树的遍历方式总体分为两类：深度优先搜索（DFS）、广度优先搜索（BFS）；
+
+常见的 DFS ： 先序遍历、中序遍历、后序遍历；
+常见的 BFS ： 层序遍历（即按层遍历）。
+求树的深度需要遍历树的所有节点，本文将介绍基于 后序遍历（DFS） 和 层序遍历（BFS） 的两种解法。
+
+方法一：后序遍历（DFS）
+  树的后序遍历 / 深度优先搜索往往利用 递归 或 栈 实现，本文使用递归实现。
+    关键点： 此树的深度和其左（右）子树的深度之间的关系。显然，此树的深度 等于 左子树的深度 与 右子树的深度 中的 最大值 +1 。
+  算法解析：
+    终止条件： 当 root 为空，说明已越过叶节点，因此返回 深度 0 。
+    递推工作： 本质上是对树做后序遍历。
+    计算节点 root 的 左子树的深度 ，即调用 maxDepth(root.left)；
+    计算节点 root 的 右子树的深度 ，即调用 maxDepth(root.right)；
+    返回值： 返回 此树的深度 ，即 max(maxDepth(root.left), maxDepth(root.right)) + 1。
+复杂度分析：
+时间复杂度 O(N) ： N 为树的节点数量，计算树的深度需要遍历所有节点。
+空间复杂度 O(N) ： 最差情况下（当树退化为链表时），递归深度可达到 N 。
+
+ class Solution {
+public:
+    //int ans = 0;
+    int maxDepth(TreeNode* root) {
+        if (root == nullptr) return 0;
+        return max(maxDepth(root->left), maxDepth(root->right)) + 1;
+    }
+};
+class Solution {
+public:
+    int dfs(TreeNode* root ,int maxDepth)
+    {
+       if(!root) return maxdepth;
+       
+       int left_dept=dfs(root->left,maxdepth+1);
+       int right_depth=dfs(root->right,maxdepth+1);
+       
+       return max(left_depth,right_depth);
+    }
+    int maxDepth(TreeNode* root) {
+       int maxdepth=0;
+       return dfs(root,maxdepth);
+    }
+};
+class Solution {
+public:
+    int maxDepth(TreeNode* root) {
+        if(root==nullptr) return 0;
+        queue<TreeNode*>q;
+        q.push(root);
+        int ans=0;
+        while(!q,epty())
+        {
+          for(int i=q.size();i>=0;i--)
+          {
+              TreeNode* cur=q.front();
+              q.pop();
+              if(cur->left) q.push(cur->left);
+              if(cur->right) q.push(cur->right);
+          }
+          ++ans;
+        }
+        return ans;
+    }
+};
+
+class Solution {
+public:
+    int maxDepth(TreeNode* root) {
+        int max_dept = 0;
+        queue<pair<TreeNode*,int> >q;
+        q.push({root, 1});
+        while(!q.empty()) {
+            TreeNode* curr_node = q.front().first;
+            int curr_dept = q.front().second;
+            q.pop();
+            if(curr_node) {
+                max_dept =  max(curr_dept, max_dept);
+                q.push({curr_node->left, curr_dept+1});
+                q.push({curr_node->right, curr_dept+1});
+            }
+        }
+        return max_dept;
+    }
+};
