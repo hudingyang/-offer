@@ -1,0 +1,33 @@
+解题思路：
+利用 HashMap 可以通过遍历数组找到数字组合，时间和空间复杂度均为 O(N) ；
+注意本题的 nums 是 排序数组 ，因此可使用 双指针法 将空间复杂度降低至 O(1) 。
+
+算法流程：
+初始化： 双指针 i , j 分别指向数组 nums 的左右两端 （俗称对撞双指针）。
+循环搜索： 当双指针相遇时跳出；
+计算和 s = nums[i] + nums[j] ；
+若 s > targets>target ，则指针 jj 向左移动，即执行 j = j - 1 ；
+若 s < targets<target ，则指针 ii 向右移动，即执行 i = i + 1 ；
+若 s = targets=target ，立即返回数组 [nums[i], nums[j]] ；
+返回空数组，代表无和为 target 的数字组合。
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+    int i=0,j=nums.size()-1;
+    vector<int> res;
+    int s;
+    while(i<j)
+    {
+        s=nums[i]+nus[j];
+        if(s==target)
+        {
+            res.push_back(nums[i]);
+            res.push_back(nums[j]);
+            break;
+        }
+        else if(s>target) j--;
+        else i++;
+}
+return res;
+    }
+};
