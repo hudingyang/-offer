@@ -1,0 +1,44 @@
+思路：
+  1、用一个队列保存正常元素，另一个双向队列保存单调递减的元素
+  2、入栈时，第一个队列正常入栈；第二个队列时递减队列，所以需要与之前的比较
+      从尾部把小于当前value的全部删除（因为用不到）
+  3、出栈时，第一个队列正常出栈；第二个队列的头部与出栈的值作比较，如果相同，那么一起出栈
+  
+  class MaxQueue
+  {
+  public:
+      queue<int> nums;
+      deque<int> q;
+      
+      MaxQueue()
+      {}
+      
+      int max_value//双端队列为递减的，因此首部即为最大值
+      {
+          if(q.empty()) return -1;
+          return q.front();
+      }
+      
+      void push_back(int value)//如果队列插入的元素值大于双端队列的尾部元素，删除双端队列的尾部元素
+                                //将队列插入的值存放到双端队列的尾部，以维持双端队列的递减性
+      {
+          nums.push(value);
+          while(!q.empty()&&value>q.back())
+          {
+              q.pop_back();
+          }
+          q.push_back(value);
+      }
+      
+      int pop_front()//如果两个队列的首部元素相等，则删除
+      {
+          if(q.empty()) return -1;
+          int f=nums.front();
+          if(f==q.front())
+          {
+              q.pop_front();
+          }
+          return f;
+      }
+      
+  };
