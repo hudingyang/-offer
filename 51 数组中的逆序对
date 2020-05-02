@@ -1,0 +1,116 @@
+归并排序
+    归并排序是分治思想的典型应用，包含三个步骤：
+    1、分解：待排序的区间为[l,r]，令mid=l+（r-l）/2;分成区间[l,mid]和区间[r,mid]
+    2、解决：使用归并排序递归的排序两个子序列。
+    3、合并：把两个已经排好的子序列合并起来
+    class Solution {
+public:
+    int mergeSort(vector<int>& nums, vector<int>& tmp, int l, int r) {
+        if (l >= r) {
+            return 0;
+        }
+
+        int mid = (l + r) / 2;
+        int inv_count = mergeSort(nums, tmp, l, mid) + mergeSort(nums, tmp, mid + 1, r);
+        int i = l, j = mid + 1, pos = l;
+        while (i <= mid && j <= r) {
+            if (nums[i] <= nums[j]) {
+                tmp[pos] = nums[i];
+                ++i;
+                inv_count += (j - (mid + 1));
+            }
+            else {
+                tmp[pos] = nums[j];
+                ++j;
+            }
+            ++pos;
+        }
+        for (int k = i; k <= mid; ++k) {
+            tmp[pos++] = nums[k];
+            inv_count += (j - (mid + 1));//计算逆序对
+        }
+        for (int k = j; k <= r; ++k) {
+            tmp[pos++] = nums[k];
+        }
+        copy(tmp.begin() + l, tmp.begin() + r + 1, nums.begin() + l);
+        return inv_count;
+    }
+
+    int reversePairs(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> tmp(n);
+        return mergeSort(nums, tmp, 0, n - 1);
+    }
+};
+为什么当左边的数比右边的数小时统计逆序对?
+左边一直比右边大 那左边的数和当前右边的数都可以组成一个逆序对 那怎么统计一共有多少个或是说直到什么时候为止呢 
+直到左边比右边小时 ，那左边的数和右边当前角标之前的数 都是逆序的。
+
+
+Java
+/**
+*归并排序稍作修改
+*O(N*logN)
+*O(N)
+*/
+class Solution {
+    //记录答案
+    private int res = 0;
+    public int reversePairs(int[] nums) {
+        int len = nums.length;
+
+        //为了不改变原数组 新copy个数组进行计算
+        int[] copy = new int[len];
+        for(int i=0;i<len;i++){
+             copy[i]=nums[i];
+         }
+
+        //归并排序
+        mergeSort(copy,0,len-1);
+        return res;
+    }
+
+    /**
+    *nums 待排序数组
+    *left 当前待排序区间的左下标
+    *right 当前待排序区间的右下标
+    */
+    private void mergeSort(int[] nums,int left,int right){
+        if(left>=right)return;
+
+        //求中点 划分左右两个区间 递归排序
+        int mid = (left+right)/2;
+        mergeSort(nums,left,mid);
+        mergeSort(nums,mid+1,right);
+
+        //利用一个tmp辅助数组 开始对左右两个排序后的区间合并
+        int l = left,r=mid+1,cur=0;
+        int[] tmp = new int[right-left+1];
+        while(l<=mid&&r<=right){
+            //左边区间数小于等于右边 左边先放入tmp 并更新左边指针
+            if(nums[l]<=nums[r]){
+                tmp[cur]=nums[l++];
+                //相对于正常归并排序多出的一个步骤 计算有多少个逆序对
+                res+=r-(mid+1);
+            }else{
+                tmp[cur]=nums[r++];
+            }
+            cur++;
+        }
+        //如果右边节点先到右区间边界导致上边while退出 
+        while(l<=mid){
+            tmp[cur++]=nums[l++];
+            //相对于正常归并排序多出的一个步骤 计算有多少个逆序对
+            res+=r-(mid+1);
+        }
+        while(r<=right){
+            tmp[cur++]=nums[r++];
+        }
+
+        //将待排序数组 当前排好序的left~right区间重新赋值
+        for(int i=0;i<tmp.length;i++){
+             nums[left+i]=tmp[i];
+         }
+
+    }
+}
