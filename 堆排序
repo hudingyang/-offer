@@ -1,0 +1,54 @@
+  1、堆排序是一种选择排序，最好最坏以及平均时间复杂度均为O(NlogN),是不稳定排序。
+      大顶堆：每个节点的值都大于或者等于其左右子节点的值
+      小顶堆：每个节点的值都小于或者等于左右孩子节点的值
+  2、堆排序的基本思想及步骤：
+      将待排序序列构造成一个大顶堆，此时，整个序列的最大值就是堆顶的根节点。将其与末尾元素进行交换，此时末尾元素就是最大值。
+      然后将剩余n-1个元素重新构造成一个堆，这样就会得到n个元素的次小值。如此反复，便能得到一个有序序列。
+代码实现:
+#include<iostream>
+#include<vecto>
+using namespace std;
+
+//递归方式构建大顶堆（len是arr的长度，index是第一个非子叶节点下标）
+void adjust(vector<int>& arr,int len, int index)
+{
+    int left=2*index+1;
+    int right=2*index+2;
+    
+    int maxidx=index;
+    if(left<len&&arr[left]>arr[maxidx]) maxidx=left;
+    if(right<len&&arr[right]>arr[maxidx]) maxidx=right;
+    
+    if(maxidx!=index)
+    {
+        swap(arr[maxidx],arr[index]);
+        adjust(arr,len,maxidx);
+    }
+}
+
+//堆排序
+void heapsort(vector<int>& arr,int size)
+{
+    //构建大顶堆(从最后一个非叶子节点向上移动)
+    for(int i=size/2-1;i>=0;i--)//size/2-1表示最后一个非子叶节点
+    {
+        adjust(arr,size,i);
+    }
+    //调整大顶堆
+    for(int =size-1;i>=1;i++)
+    {
+        swap(arr[0],arr[i]);//将最大的放置到数组末尾
+        adjust(arr,i,0);//将为完成排序的部分继续进行排序
+    }
+}
+
+int main()
+{
+  vector<int> arr={8,1,14,3,21,5,7,10};
+  heapsort(arr,arr.size());
+  for(int i=0;i<arr.size();i++)
+  {
+      cout<<arr[i]<<endl;
+  }
+  return 0;
+}
