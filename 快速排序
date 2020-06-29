@@ -1,0 +1,163 @@
+ 快速排序的基本实现
+
+快速排序算法是一种基于交换的高效的排序算法，它采用了分治法的思想：
+    1、从数列中取出一个数作为基准数（枢轴，pivot）。 
+    2、将数组进行划分(partition)，将比基准数大的元素都移至枢轴右边，将小于等于基准数的元素都移至枢轴左边。
+    3、再对左右的子区间重复第二步的划分操作，直至每个子区间只有一个元素。
+        快排最重要的一步就是划分了。划分的过程用通俗的语言讲就是“挖坑”和“填坑”。
+
+快速排序时间复杂度
+    快速排序的时间复杂度在最坏情况下是O(N2)，平均的时间复杂度是O(N*lgN)。
+    这句话很好理解：假设被排序的数列中有N个数。遍历一次的时间复杂度是O(N)，需要遍历多少次呢？至少lg(N+1)次，最多N次。
+    (01) 为什么最少是lg(N+1)次？快速排序是采用的分治法进行遍历的，我们将它看作一棵二叉树，它需要遍历的次数就是二叉树的深度，而根据完全二叉树的定义，它的深度至少是lg(N+1)。
+          因此，快速排序的遍历次数最少是lg(N+1)次。
+    (02) 为什么最多是N次？这个应该非常简单，还是将快速排序看作一棵二叉树，它的深度最大是N。因此，快读排序的遍历次数最多是N次。
+
+快速排序稳定性
+    快速排序是不稳定的算法，它不满足稳定算法的定义。
+    算法稳定性 -- 假设在数列中存在a[i]=a[j]，若在排序之前，a[i]在a[j]前面；并且排序之后，a[i]仍然在a[j]前面。则这个排序算法是稳定的！
+    
+实现方式1:
+int partition(int arr[], int left, int right)  //找基准数 划分
+{
+    int i = left + 1 ;
+    int j = right;
+    int temp = arr[left];
+
+    while(i <= j)
+    {
+        while (arr[i] < temp)
+        {
+            i++;
+        }
+        while (arr[j] > temp )
+        {
+            j--;
+        }
+        if (i < j)
+            swap(arr[i++], arr[j--]);
+        else i++;
+    }
+    swap(arr[j], arr[left]);
+    return j;
+
+}
+
+void quick_sort(int arr[], int left, int right)
+{
+    if (left > right)
+        return;
+    int j = partition(arr, left, right);
+    quick_sort(arr, left, j - 1);
+    quick_sort(arr, j + 1, right);
+}
+
+实现方式2：
+void QuickSort(int array[], int start, int last)
+{
+    int i = start;
+    int j = last;
+    int temp = array[i];
+    if (i < j)
+    {
+        while (i < j)
+        {
+            //
+            while (i < j &&  array[j]>=temp )
+                j--;
+            if (i < j)
+            {
+                array[i] = array[j];
+                i++;
+            }
+
+            while (i < j && temp > array[i])
+                i++;
+            if (i < j)
+            {
+                array[j] = array[i];
+                j--;
+            }
+
+        }
+        //把基准数放到i位置
+        array[i] = temp;
+        //递归方法
+        QuickSort(array, start, i - 1);
+        QuickSort(array, i + 1, last);
+    }
+}
+
+C++函数模板实现
+template<typename T>
+void quicksort(T data[], int first, int last)
+{
+    int lower = first + 1;
+    int upper = last;
+    swap(data[first], data[(first + last) / 2]);
+    T bound = data[first];
+    while (lower <= upper)
+    {
+        while (data[lower] < bound)
+            lower++;
+        while (data[upper] > bound)
+            upper--;
+        if (lower < upper)
+            swap(data[lower++], data[upper--]);
+        else lower++;
+    }
+    swap(data[upper], data[first]);
+    if (first < upper - 1)
+        quicksort(data, first, upper - 1);
+    if (upper + 1 < last)
+        quicksort(data, upper + 1, last);
+}
+
+template<class T>
+void quicksort(T data[], int n)
+{
+    int i, max;
+    if (n < 2)
+        return;
+    for (i = 1, max = 0; i < n; i++)
+        if (data[max] < data[i])
+            max = i;
+    swap(data[n - 1], data[max]);
+    quicksort(data, 0, n - 2);  //
+}
+
+//测试代码：
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <time.h>
+using namespace std;
+
+void PrintArray(int array[], int len)
+{
+    for (int i = 0; i < len; i++)
+    {
+        cout << array[i] << " ";
+    }
+    cout << endl;
+}
+
+int main(void)
+{
+    const int NUM = 10;
+    int array[NUM] = { 0 };
+    srand((unsigned int)time(nullptr));
+    for (int i = 0; i < NUM; i++)
+    {
+        array[i] = rand() % 100 + 1;
+    }
+    cout << "排序前：" << endl;
+    PrintArray(array, NUM);
+    cout << "排序后：" << endl;
+    quicksort(array, 0, NUM - 1);
+        PrintArray(array, NUM);
+
+    return 0;
+}
