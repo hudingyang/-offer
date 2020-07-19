@@ -1,0 +1,22 @@
+根据题意，此 5 张牌是顺子的 充分条件 如下：
+除大小王外，所有牌 无重复 ；
+设此 55 张牌中最大的牌为 max ，最小的牌为 min （大小王除外），则需满足：
+max - min < 5
+因而，可将问题转化为：此 5 张牌是否满足以上两个条件？
+
+class Solution {
+public:
+    bool isStraight(vector<int>& nums) {
+       int joker=0;
+       sort(nums.begin(),nums.end());
+       for(int i=0;i<4;i++)
+       {
+          if(nums[i]==0)
+          {
+              joker++;
+          }
+          else if(nums[i]==nums[i+1]) return false;
+       }
+       return nums[4]-nums[joker]<5;
+    }
+};
