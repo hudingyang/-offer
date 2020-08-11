@@ -1,0 +1,66 @@
+算法步骤:(假设当前遍历到的节点为x)
+    1、如果x无左孩子，则访问x的右孩子，即x=x.right;
+    2、如果有左孩子，则找到x左子树上最右的节点（即左子树中序遍历的最后一个节点，x在中序遍历中的前驱节点），
+       即为predecessor，根据predecessor的右子树是否为空，进行如下操作：
+       a:如果predecessor的右子树为空，则将其右子树指向x,然后访问x的左子树，即x=x.left
+       b:如果predecessor的右子树不为空，则此时右子树指向x，说明已经遍历完了左子树，将predecessor的右子树
+         置空，然后访问x的右子树，即x=x.right.
+    3、重复以上步骤
+    
+    
+    //二叉树节点
+    struct TreeNode{
+          int val;
+          TreeNode* left;
+          TreeNode* right;
+          TreeNode(int x):val(x),left(NULL),right(NULL) {}
+    };
+    
+    class Solution {
+public:
+    void recoverTree(TreeNode* root) {
+        TreeNode *x = nullptr, *y = nullptr, *pred = nullptr, *predecessor = nullptr;
+
+        while (root != nullptr) {
+            if (root->left != nullptr) {
+                // predecessor 节点就是当前 root 节点向左走一步，然后一直向右走至无法走为止
+                predecessor = root->left;
+                while (predecessor->right != nullptr && predecessor->right != root) {
+                    predecessor = predecessor->right;
+                }
+                
+                // 让 predecessor 的右指针指向 root，继续遍历左子树
+                if (predecessor->right == nullptr) {
+                    predecessor->right = root;
+                    root = root->left;
+                }
+                // 说明左子树已经访问完了，我们需要断开链接
+                else {
+                    if (pred != nullptr && root->val < pred->val) {
+                        y = root;
+                        if (x == nullptr) {
+                            x = pred;
+                        }
+                    }
+                    pred = root;
+
+                    predecessor->right = nullptr;
+                    root = root->right;
+                }
+            }
+            // 如果没有左孩子，则直接访问右孩子
+            else {
+                if (pred != nullptr && root->val < pred->val) {
+                    y = root;
+                    if (x == nullptr) {
+                        x = pred;
+                    }
+                }
+                pred = root;
+                root = root->right;
+            }
+        }
+        swap(x->val, y->val);
+    }
+};
+ 
