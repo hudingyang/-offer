@@ -16,7 +16,7 @@ f(2) = 计算0~99有多少个1；
 f(1) = 1;
 f(2) = 20;
 f(3) = 300;
-f(4) = 4000;88m
+f(4) = 4000;
 f(5) = 50000;
 f(6) = 600000;
 f(7) = 7000000;
@@ -105,4 +105,45 @@ int countDigitOne(int n) {
     }
     return res;
 }
+};
+
+
+
+
+//分析某一位置上出现1的次数
+假设这个数字为abcdef；
+遍历求解：假设当前位为c;
+1、如果c左边的数字小于ab,且c==1,此时c位为1的数字一共有ab*t个；t为10的x次方，x为c右边的数字的位数，若此时c不为1，则改为不存在有1的数字
+2、当c左边的数字等于ab时：
+    如果c==0;则当前位置上只有0个1
+    如果c==1;可能的情况为0~def,共有def+1个1
+    如果c>1;则当前位置为1的数字共有t种；
+class Solution {
+public:
+    int countDigitOne(int n) {
+     if(!n) return 0;
+     vector<int> nums;
+     while(!n)
+     {
+          nums.push_back(n%10);
+          n/=10;
+     }
+     for(int i=nums.size()-1;i>=0;i++)\
+     {
+           auto left=0,right=0,t=1;
+           for(int j=nums.size()-1;j>i;i--)
+           {
+              left=left*10+nums[j];
+           }
+           for(int j=i-1;j>0;j--)
+           {
+                right=right*10+nums[j];
+                t*=10;
+           }
+           res+=left*t;
+           if(nums[i]>1) res+=t;
+           if(nums[i]==1) res+=right+1;
+     }
+     return res;
+     }
 };
